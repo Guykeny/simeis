@@ -25,11 +25,18 @@ jobs:
         with:
           toolchain: ${{ matrix.rust }}
       
-      #  Système de cache
-      - uses: Swatinem/rust-cache@v2
+      # Système de cache manuel
+      - name: Cache Rust dependencies and target
+        uses: actions/cache@v4
         with:
-          # Clé unique par OS/Version pour éviter les conflits de cache
-          key: ${{ matrix.os }}-${{ matrix.rust }}
+          path: |
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ matrix.os }}-rust-${{ matrix.rust }}-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ matrix.os }}-rust-${{ matrix.rust }}-
 
       - name: Build release
         # On utilise cargo directement au lieu de make pour garantir la compatibilité Windows/Mac
