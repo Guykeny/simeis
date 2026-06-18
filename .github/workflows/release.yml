@@ -42,13 +42,13 @@ jobs:
             | tar -xJ --strip-components=1 -C /usr/local/bin typst-x86_64-unknown-linux-musl/typst
 
       - name: Install dpkg tools
-        run: sudo apt-get install -y dpkg-dev
+        run: apt-get install -y dpkg-dev
 
       - name: Build binary
-        run: make -f MakeFile release
+        run: make release
 
       - name: Build documentation
-        run: make -f MakeFile doc
+        run: make doc
 
       - name: Build Debian package
         run: make -f MakeFile deb
