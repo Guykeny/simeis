@@ -5,39 +5,40 @@ on:
   pull_request:
 
 jobs:
-  checks:
-    name: Check & Tests
-    if: github.event_name != 'pull_request' || github.base_ref != 'main'
+  # Job 1 : Vérification de la syntaxe et du style (Clippy)
+  lint:
+    name: Lint (Clippy)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy
-      - uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            target
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - uses: Swatinem/rust-cache@v2 # MODIFICATION: Cache optimisé
       - run: make -f MakeFile check
+
+  # Job 2 : Tests unitaires (en parallèle du Lint)
+  tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2 # MODIFICATION: Cache optimisé
       - run: make -f MakeFile test
 
+  # Job 3 : Release (uniquement sur PR vers main)
   release:
     name: Release & Doc
+    needs: [lint, tests] # MODIFICATION: Parallélisation - Attendre que les tests passent avant de builder la release
     if: github.event_name == 'pull_request' && github.base_ref == 'main'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
-      - uses: actions/cache@v4
+      - uses: Swatinem/rust-cache@v2 # MODIFICATION: Cache optimisé
         with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            target
-          key: ${{ runner.os }}-cargo-release-${{ hashFiles('**/Cargo.lock') }}
+          prefix-key: "release"
       - name: Install typst
         run: |
           curl -fsSL https://github.com/typst/typst/releases/latest/download/typst-x86_64-unknown-linux-musl.tar.xz \
