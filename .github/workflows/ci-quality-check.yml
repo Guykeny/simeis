@@ -20,7 +20,7 @@ jobs:
           cargo fmt --check
           cargo clippy
 
-      - name: Python Format Check
+      - name: Python Format Check # Dans cette section, nous vérifions le formatage du code Python en utilisant l'outil Black. Si le code n'est pas correctement formaté, cette étape échouera et signalera un problème dans la pull request.
         run: |
           python -m pip install --upgrade pip
           python -m pip install black
