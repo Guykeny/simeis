@@ -1,0 +1,27 @@
+name: CI Quality Check
+
+on:
+  pull_request:
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - name: Rust Quality Checks
+        run: |
+          cargo check
+          cargo fmt --check
+          cargo clippy
+
+      - name: Python Format Check
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install black
+          python -m black --check .
