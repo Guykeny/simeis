@@ -27,8 +27,9 @@ jobs:
 
       - name: Run heavy tests and build
         run: |
-          cargo test --features heavy-testing
-          cargo build --features heavy-testing
+          cargo test --manifest-path simeis-data/Cargo.toml --features heavy-testing
+          cargo test --manifest-path simeis-server/Cargo.toml --features heavy-testing
+          cargo build --manifest-path simeis-server/Cargo.toml --features heavy-testing
 
       - name: Run functional test script
         run: python test_fonctionnel.py
