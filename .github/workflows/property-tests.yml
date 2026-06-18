@@ -1,4 +1,4 @@
-name: CI
+name: Property Tests
 
 on:
   push:
