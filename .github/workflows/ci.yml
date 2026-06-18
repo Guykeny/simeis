@@ -24,13 +24,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
-      - uses: Swatinem/rust-cache@v2 # MODIFICATION: Cache optimisé
+      - uses: Swatinem/rust-cache@v2 # Cache optimisé
       - run: make -f MakeFile test
 
   # Job 3 : Release (uniquement sur PR vers main)
   release:
     name: Release & Doc
-    needs: [lint, tests] # MODIFICATION: Parallélisation - Attendre que les tests passent avant de builder la release
+    needs: [lint, tests] # Parallélisation - Attendre que les tests passent avant de builder la release
     if: github.event_name == 'pull_request' && github.base_ref == 'main'
     runs-on: ubuntu-latest
     steps:
