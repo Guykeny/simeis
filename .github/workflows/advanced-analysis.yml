@@ -17,17 +17,29 @@ jobs:
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable # Installe la toolchain stable de Rust
 
-      - name: Install nightly toolchain for udeps 
+      - name: Install nightly toolchain for udeps
         run: rustup toolchain install nightly
+
+      - name: Cache Cargo registry, tools and build artifacts
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            ~/.cargo/bin
+            target
+          key: ${{ runner.os }}-cargo-analysis-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-analysis-
 
       - name: Install audit and udeps tools
         run: |
-          cargo install cargo-audit
-          cargo install cargo-udeps
+          cargo install cargo-audit --locked
+          cargo install cargo-udeps --locked
 
       - name: Run heavy tests and build
         run: |
-          cargo test --manifest-path simeis-data/Cargo.toml --features heavy-testing
+          cargo test --manifest-path simeis-data/Cargo.toml --features heavy_testing
           cargo test --manifest-path simeis-server/Cargo.toml --features heavy-testing
           cargo build --manifest-path simeis-server/Cargo.toml --features heavy-testing
 
