@@ -116,6 +116,28 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Build for testing
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: .github/Dockerfile
+          load: true
+          tags: simeis-server:test
+          cache-from: type=gha
+
+      - name: Test Docker image
+        run: |
+          docker run -d --name simeis-test -p 8080:8080 simeis-server:test
+          for i in $(seq 1 10); do
+            if curl -sf http://localhost:8080/ping; then
+              break
+            fi
+            sleep 2
+          done
+          curl -sf http://localhost:8080/ping
+          docker stop simeis-test
+          docker rm simeis-test
+
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
