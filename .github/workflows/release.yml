@@ -44,7 +44,7 @@ jobs:
             | tar -xJ --strip-components=1 -C /usr/local/bin typst-x86_64-unknown-linux-musl/typst
 
       - name: Install dpkg tools
-        run: apt-get install -y dpkg-dev
+        run: sudo apt-get install -y dpkg-dev
 
       - name: Build binary
         run: make release
