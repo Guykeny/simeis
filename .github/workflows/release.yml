@@ -43,11 +43,21 @@ jobs:
           curl -fsSL https://github.com/typst/typst/releases/latest/download/typst-x86_64-unknown-linux-musl.tar.xz \
             | tar -xJ --strip-components=1 -C /usr/local/bin typst-x86_64-unknown-linux-musl/typst
 
+      - name: Install dpkg tools
+        run: apt-get install -y dpkg-dev
+
       - name: Build binary
-        run: make -f MakeFile release
+        run: make release
 
       - name: Build documentation
-        run: make -f MakeFile doc
+        run: make doc
+
+      - name: Build Debian package
+        run: make -f MakeFile deb
+
+      - name: Find .deb path
+        id: deb
+        run: echo "path=$(find build -name '*.deb')" >> $GITHUB_OUTPUT
 
       - name: Generate changelog
         env:
@@ -82,6 +92,7 @@ jobs:
           files: |
             target/release/simeis-server
             doc/manual.pdf
+            ${{ steps.deb.outputs.path }}
 
   docker:
     name: Build and push Docker image

@@ -19,4 +19,4 @@ mea = { workspace = true }
 default = []
 testing = []
 extraspeed = []
-heavy-testing = []
+heavy_testing = []
