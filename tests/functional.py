@@ -44,16 +44,20 @@ def scenario_buy_ship_and_module():
 
     sdk.buy_ship(sta, ships[0]["id"])
     status = sdk.get_player_status()
-    assert len(status["ships"]) == 1, "le vaisseau achete doit apparaitre chez le joueur"
+    assert (
+        len(status["ships"]) == 1
+    ), "le vaisseau achete doit apparaitre chez le joueur"
     money_after_ship = status["money"]
-    assert money_after_ship < money_start, "l'argent doit avoir diminue apres l'achat du vaisseau"
+    assert (
+        money_after_ship < money_start
+    ), "l'argent doit avoir diminue apres l'achat du vaisseau"
 
     ship_id = status["ships"][0]["id"]
     sdk.buy_module_on_ship(sta, ship_id, "Miner")
     money_after_module = sdk.get_player_status()["money"]
-    assert money_after_module < money_after_ship, (
-        "l'argent doit avoir encore diminue apres l'achat du module"
-    )
+    assert (
+        money_after_module < money_after_ship
+    ), "l'argent doit avoir encore diminue apres l'achat du module"
 
 
 def scenario_navigation():
@@ -78,8 +82,12 @@ def scenario_navigation():
 
     ship_status = advance_until_idle(sdk, ship_id)
     assert ship_status["state"] == "Idle", "le vaisseau doit etre revenu a l'etat Idle"
-    assert tuple(ship_status["position"]) == dest, "le vaisseau doit etre arrive a destination"
-    assert ship_status["fuel_tank"] < fuel_before, "le carburant doit avoir diminue pendant le trajet"
+    assert (
+        tuple(ship_status["position"]) == dest
+    ), "le vaisseau doit etre arrive a destination"
+    assert (
+        ship_status["fuel_tank"] < fuel_before
+    ), "le carburant doit avoir diminue pendant le trajet"
 
 
 def scenario_market_trade():
@@ -95,14 +103,18 @@ def scenario_market_trade():
     bought = sdk.buy_resource(sta, "fuel", 50)
     assert bought["fees"] > 0, "des frais doivent etre preleves sur la transaction"
     money_after_buy = sdk.get_player_status()["money"]
-    assert money_after_buy < money_before_buy, "l'argent doit diminuer apres un achat sur le marche"
+    assert (
+        money_after_buy < money_before_buy
+    ), "l'argent doit diminuer apres un achat sur le marche"
 
     stock_after_buy = sdk.get_station_resources(sta).get("Fuel", 0)
     assert stock_after_buy > 0, "le carburant achete doit etre stocke dans la station"
 
     sdk.sell_resource(sta, "fuel", stock_after_buy / 2)
     money_after_sell = sdk.get_player_status()["money"]
-    assert money_after_sell > money_after_buy, "l'argent doit augmenter apres une vente sur le marche"
+    assert (
+        money_after_sell > money_after_buy
+    ), "l'argent doit augmenter apres une vente sur le marche"
 
     stock_after_sell = sdk.get_station_resources(sta).get("Fuel", 0)
     assert stock_after_sell < stock_after_buy, "le stock doit diminuer apres la vente"
