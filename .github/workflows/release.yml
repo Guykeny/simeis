@@ -99,7 +99,7 @@ jobs:
     needs: create-release
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       packages: write
 
     steps:
@@ -127,3 +127,15 @@ jobs:
             ghcr.io/${{ github.repository }}:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Save Docker image as archive
+        run: |
+          docker pull ghcr.io/${{ github.repository }}:${{ needs.create-release.outputs.version }}
+          docker save ghcr.io/${{ github.repository }}:${{ needs.create-release.outputs.version }} \
+            | gzip > simeis-server-docker-${{ needs.create-release.outputs.version }}.tar.gz
+
+      - name: Upload Docker image to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ needs.create-release.outputs.version }}
+          files: simeis-server-docker-${{ needs.create-release.outputs.version }}.tar.gz
