@@ -27,7 +27,7 @@ jobs:
 
       - name: Run heavy tests and build
         run: |
-          cargo test --manifest-path simeis-data/Cargo.toml --features heavy-testing
+          cargo test --manifest-path simeis-data/Cargo.toml --features heavy_testing
           cargo test --manifest-path simeis-server/Cargo.toml --features heavy-testing
           cargo build --manifest-path simeis-server/Cargo.toml --features heavy-testing
 
